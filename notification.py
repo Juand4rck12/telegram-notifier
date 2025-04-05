@@ -6,7 +6,7 @@ load_dotenv()
 
 # 📌 Configuración
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+CHATIDS = [os.getenv("CHAT_ID_1"), os.getenv("CHAT_ID_2")]
 
 # 📌 Lista de 30 verbos irregulares
 verbs = [
@@ -55,14 +55,15 @@ message = (
     f"💡 *Significado:* {verb['meaning']}"
 )
 
-# 📌 Enviar mensaje a Telegram
 url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-data = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
 
-response = requests.post(url, data=data)
+def sendMessage(chatId, message, parseMode = "Markdown"):
+    data = {"chat_id": chatId, "text": message, "parse_mode": parseMode }
+    response = requests.post(url, data=data)
+    if response.status_code == 200:
+        print(f"Mensaje enviado con exito al chat: {chatId}")
+    else:
+        print(f"Error al enviar el mensaje al chat {chatId}", response.text) 
 
-# 📌 Verificar si el mensaje se envió correctamente
-if response.status_code == 200:
-    print("✅ Mensaje enviado con éxito.")
-else:
-    print("❌ Error al enviar el mensaje:", response.text)
+for chatId in CHATIDS:
+    sendMessage(chatId, message)
